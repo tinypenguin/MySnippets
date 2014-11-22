@@ -1,0 +1,303 @@
+#######################################################################
+#                         C Language snippets                         #
+#######################################################################
+
+priority 1
+
+#######################################################################
+#                        Preprocessor commands                        #
+#######################################################################
+
+snippet def "#define ..."
+#define ${1}
+endsnippet
+
+snippet ifndef "#ifndef ... #define ... #endif"
+#ifndef ${1/([A-Za-z0-9_]+).*/$1/}
+#define ${1:SYMBOL} ${2:value}
+#endif
+endsnippet
+
+snippet #if "#if #endif" b
+#if ${1:0}
+${VISUAL}${0}
+#endif
+endsnippet
+
+snippet inc "#include local header (inc)"
+#include "${1:`!p snip.rv = snip.basename + '.h'`}"
+endsnippet
+
+snippet Inc "#include <> (Inc)"
+#include <${1:.h}>
+endsnippet
+
+snippet mark "#pragma mark (mark)"
+#if 0
+${1:#pragma mark -
+}#pragma mark $2
+#endif
+
+$0
+endsnippet
+
+#######################################################################
+#                               Idioms                                #
+#######################################################################
+
+###################################
+#  main with standard parameters  #
+###################################
+snippet main "main params"
+/*
+ * ===  FUNCTION  ============================================================
+ *         Name:  main
+ *  Description:  ${1}
+ * ===========================================================================
+ */
+int main (int argc, char *argv[])
+{
+	${VISUAL}${0}
+	return EXIT_SUCCESS;
+}/* ----------  end of function main  ---------- */
+endsnippet
+
+#############################
+#  main with no parameters  #
+#############################
+snippet mainv "main void"
+/*
+ * ===  FUNCTION  ============================================================
+ *         Name:  main
+ *  Description:  ${1:Main function}
+ * ===========================================================================
+ */
+int main (void)
+{
+	${VISUAL}${0}
+	return EXIT_SUCCESS;
+}/* ----------  end of function main  ---------- */
+endsnippet
+
+##############
+#  function  #
+##############
+snippet fun "function (fun)"
+/*
+ * ===  FUNCTION  ============================================================
+ *         Name:  $1
+ *  Description:  ${2:Function description}
+ * ===========================================================================
+ */
+${3:void} ${1:function_name}(${4:void})
+{
+	${VISUAL}${0}
+}/* -----  end of function $1  ----- */
+endsnippet
+
+snippet fund "function declaration" b
+${1:void} ${2:function_name}(${3});
+endsnippet
+
+#####################
+#  static function  #
+#####################
+snippet funs "static function (funs)"
+/*
+ * ===  STATIC FUNCTION  =====================================================
+ *         Name:  $1
+ *  Description:  ${2:Function description}
+ * ===========================================================================
+ */
+static ${3:void} ${1:function_name}(${4:void})
+{
+	${VISUAL}${0}
+}/* -----  end of static function $1  ----- */
+endsnippet
+
+
+#######################################################################
+#                                Types                                #
+#######################################################################
+
+snippet en "Enumeration"
+enum ${1:etag}_t { ${VISUAL}$0 };
+endsnippet
+
+snippet tden "Type def enumeration (tde)" b
+typedef enum ${1:etag}_t { $0 } $1_t;
+endsnippet
+#typedef enum $1 `!p snip.rv=t[1][0].upper()+t[1][1:]`;
+
+snippet st "Structure"
+struct ${1:stag}_t
+{
+	${VISUAL}${0:/* data */}
+};/* -----  end of struct $1_t  ----- */
+endsnippet
+
+snippet tdst "typedef struct"
+typedef struct ${1:stag}_t
+{
+	${VISUAL}${0:/* data */}
+}$1_t;/* -----  end of typedef struct $1_t  ----- */
+endsnippet
+
+snippet un "Union"
+union ${1:unag}_t
+{
+	${VISUAL}${0:/* data */}
+};/* -----  end of union $1_t  ----- */
+endsnippet
+
+snippet tdun "Typedef union"
+typedef union ${1:unag}_t
+{
+	${VISUAL}${0:/* data */}
+}$1_t;/* -----  end of typedef union $1_t  ----- */
+endsnippet
+
+snippet td "Typedef"
+typedef ${1:int} ${2:MyCustomType};
+endsnippet
+
+#######################################################################
+#                             Statements                              #
+#######################################################################
+
+snippet for "for loop (for)"
+for (${2:i} = 0; $2 < ${1:count}; ${3:++$2})
+{
+	${VISUAL}${0}
+}
+endsnippet
+
+snippet fori "for int loop (fori)"
+for (${4:int} ${2:i} = 0; $2 < ${1:count}; ${3:++$2})
+{
+	${VISUAL}${0}
+}
+endsnippet
+
+snippet wh "while loop"
+while(${1:/* condition */}) {
+	${VISUAL}${0}
+}
+endsnippet
+
+snippet do "do...while loop (do)"
+do {
+	${VISUAL}${0}
+} while(${1:/* condition */});
+endsnippet
+
+snippet el "else .. (else)"
+else {
+	${VISUAL}${0}
+}
+endsnippet
+
+snippet eli "else if .. (eli)"
+else if (${1:/* condition */}) {
+	${VISUAL}${0}
+}
+endsnippet
+
+snippet if "if .. (if)"
+if (${1:/* condition */})
+{
+	${VISUAL}${0}
+}
+endsnippet
+
+snippet ife "if .. else (ife)"
+if (${1:/* condition */})
+{
+	${2}
+}
+else
+{
+	${3:/* else */}
+}
+endsnippet
+
+#######################################################################
+#                      Various helper functions                       #
+#######################################################################
+
+snippet printf "printf .. (printf)"
+printf("${1:%s}\n"${1/([^%]|%%)*(%.)?.*/(?2:, :\);)/}$2${1/([^%]|%%)*(%.)?.*/(?2:\);)/}
+endsnippet
+
+snippet fprintf "fprintf ..."
+fprintf(${1:stderr}, "${2:%s}\n"${2/([^%]|%%)*(%.)?.*/(?2:, :\);)/}$3${2/([^%]|%%)*(%.)?.*/(?2:\);)/}
+endsnippet
+
+snippet once "Include header once only guard"
+#ifndef ${1:`!p
+if not snip.c:
+	import random, string
+	name = re.sub(r'[^A-Za-z0-9]+','_', snip.fn).upper()
+	rand = ''.join(random.sample(string.ascii_letters+string.digits, 8))
+	snip.rv = ('%s_%s' % (name,rand)).upper()
+else:
+	snip.rv = snip.c`}
+#define $1
+
+${VISUAL}${0}
+
+#endif /* end of include guard: $1 */
+endsnippet
+
+# getopt
+snippet getopt "getopt"
+int choice;
+while (1)
+{
+	static struct option long_options[] =
+	{
+		/* Use flags like so:
+		{"verbose",	no_argument,	&verbose_flag, 'V'}*/
+		/* Argument styles: no_argument, required_argument, optional_argument */
+		{"version", no_argument,	0,	'v'},
+		{"help",	no_argument,	0,	'h'},
+		${1}
+		{0,0,0,0}
+	};
+	int option_index = 0;
+	/* Argument parameters:
+		no_argument: " "
+		required_argument: ":"
+		optional_argument: "::" */
+	choice = getopt_long( argc, argv, "vh",
+				long_options, &option_index);
+	if (choice == -1)
+		break;
+	switch( choice )
+	{
+		case 'v':
+			${2}
+			break;
+		case 'h':
+			${3}
+			break;
+		case '?':
+			/* getopt_long will have already printed an error */
+			break;
+		default:
+			/* Not sure how to get here... */
+			return EXIT_FAILURE;
+	}
+}
+/* Deal with non-option arguments here */
+if ( optind < argc )
+{
+	while ( optind < argc )
+	{
+		${0}
+	}
+}
+endsnippet
+
+
+# vim:ft=snippets:
